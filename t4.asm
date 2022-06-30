@@ -2,14 +2,32 @@
     .globl main
 
 main:
-    la		$s0, n              # s0 = *n
+    la	    $s0, n              # s0 = *n
     lw      $s0, 0($s0)         # s0 = n
 
     la      $s1, A              # s1 = *vetor[0]
     xor     $s2, $s2, $s2       # i = 0
     xor     $s3, $s3, $s3       # soma = 0
-    jal		addLoop				# calcular soma em s3
+    jal	    addLoop             # calcular soma em s3
     jal     divider             # calcular divisão em v1
+    la	    $s1, D              # s1 = d[0]
+    sw	    $v1, 0($s1)         # *v1 = conteudo em $s1 + 0
+
+    la      $s1, B              # s1 = *vetor[0]
+    xor     $s2, $s2, $s2       # i = 0
+    xor     $s3, $s3, $s3       # soma = 0
+    jal	    addLoop             # calcular soma em s3
+    jal     divider             # calcular divisão em v1
+    la	    s1, D               # s1 = d[0]
+    sw	    v1, 4($s1)          # *v1 = conteudo em $s1 + 4
+
+    la      $s1, C              # s1 = *vetor[0]
+    xor     $s2, $s2, $s2       # i = 0
+    xor     $s3, $s3, $s3       # soma = 0
+    jal     addLoop             # calcular soma em s3
+    jal     divider             # calcular divisão em v1
+    la	    s1, D               # s1 = d[0]
+    sw	    $v1, 8($s1)         # *v1 = conteudo em $s1 + 8
     
 ###############################################################################################
 ###  addLoop - Somador.
@@ -25,15 +43,15 @@ main:
 ###############################################################################################
 
 addLoop:
-    lw		$t0, 0($s1)         # le da memoria vetor[i]
+    lw	    $t0, 0($s1)         # le da memoria vetor[i]
     add     $s3, $s3, $t0       # soma += vetor[i]
-    blt		$s2, $s0, increment	# if (i < n) { i++ }
+    blt	    $s2, $s0, increment	# if (i < n) { i++ }
     jr      $ra                 # else { encerra a funcao }
 
 increment:
     addi    $s2, $s2, 1         # i++
     addi    $s1, $s1, 4         # *vetor[i] += 4
-    j		addLoop				# jump to mloop
+    j	    addLoop             # jump to mloop
     
 ###############################################################################################
 ###  divider - Divisão.
