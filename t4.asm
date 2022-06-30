@@ -1,44 +1,60 @@
 .text
     .globl main
 
-###############################################################################################
-###  main
-###############################################################################################
-#
-# Registradores usados: 0, s0, s1, t0, t1, t2, v0, v1, ra
-#
-###############################################################################################
 main:
-    # do stuff...
+    la		$s0, n              # s0 = *n
+    lw      $s0, 0($s0)         # s0 = n
 
-
-
+    la      $s1, A              # s1 = *vetor[0]
+    xor     $s2, $s2, $s2       # i = 0
+    xor     $s3, $s3, $s3       # soma = 0
+    jal		addLoop				# calcular soma em s3
+    jal     divider             # calcular divisão em v1
+    
 ###############################################################################################
-###  fdiv - Divisão.
+###  addLoop - Somador.
 ###############################################################################################
-# s1 = dividendo
+# t0 = *vetor[i]
+# s0 = n
+# s1 = *vetor[i]
+# s2 = i
+# s3 = soma
+#
+# Registradores usados: t0, s0, s1, s2, s3, ra
+#
+###############################################################################################
+
+addLoop:
+    lw		$t0, 0($s1)         # le da memoria vetor[i]
+    add     $s3, $s3, $t0       # soma += vetor[i]
+    blt		$s2, $s0, increment	# if (i < n) { i++ }
+    jr      $ra                 # else { encerra a funcao }
+
+increment:
+    addi    $s2, $s2, 1         # i++
+    addi    $s1, $s1, 4         # *vetor[i] += 4
+    j		addLoop				# jump to mloop
+    
+###############################################################################################
+###  divider - Divisão.
+###############################################################################################
+# a1 = dividendo
 # s0 = divisor
 # v0 = resto
 # v1 = divisao
 #
-# Registradores usados: 0, s0, s1, t0, t1, t2, v0, v1, ra
+# Registradores usados: 0, s0, a1, t0, t1, t2, v0, v1, ra
 #
 ###############################################################################################
-
-fdiv:
-    la      $s1, d1             # s1 = *dividendo
-    lw      $s1, 0($s1)         # s1 = dividendo
-    la      $s0, d2             # s0 = *divisor
-    lw      $s0, 0($s0)         # s0 = divisor
 
 divider:  
     lui     $t0, 0x8000         # mascara para isolar bit mais significativo
     li      $t1, 32             # contador de iterações
 
     xor     $v0, $v0, $v0       # registrador P($v0)-A($v1) com  0 e o dividendo
-    add     $v1, $s1, $0
+    add     $v1, $a1, $0
 
-dloop:    
+dloop:
     and     $t2, $v1, $t0       # isola em t2 o bit mais significativo do registador 'A' ($v1)
     sll     $v0, $v0, 1         # desloca o registrado P-A
     sll     $v1, $v1, 1 
@@ -54,36 +70,14 @@ di1:
 
 di2:      
     addi    $t1, $t1, -1        # decrementa o número de iterações 
-    bne     $t1, $0, dloop 
+    bne     $t1, $0, dloop      # if (i = 0) { jump dloop }
 
     jr      $ra                 # encerra a funcao
 
-###############################################################################################
-### fmax - Encontra o valor maximo em um vetor. 
-###############################################################################################
-# t0 = vetor[i]
-# t1 = i
-# t2 = n
-# t3 = max
-#
-# Registradores usados: 0, t0, t1, t2, t3, t4, ra
-#
-###############################################################################################
-
-fmax:   
-    la      $t0, vetor          # t0 = vetor[0]
-    xor     $t1, $t1, $t1       # i = 0
-    la		$t2, n              # t2 = *n
-    lw      $t2, 0($t2)         # t2 = n
-    xor     $t3, $t3, $t3       # max = 0
-
-mloop: # do {} while (i<n)
-    lw		$t4, 0($t0)		    # le da memoria a[i]
-    blt     $t4, $t3, ml1       # if a[i] < max { jump l1 }
-    add     $t3, $t4, $0        # else { t3 = t4 }
-
-ml1:
-    addi    $t1, $t1, 1         # i++
-    addi    $t0, $t0, 4         # t0 = vetor[i]
-    blt		$t1, $t2, loop	    # do { loop } while (i<n)
-    jr      $ra                 # encerra a funcao
+.data
+A: .word 810 100 560 380 600 87
+B: .word 800 555 817 124 890 456
+C: .word 345 200 700 180 600 490
+n: .word 6
+k: .word 0
+D: .word 0
