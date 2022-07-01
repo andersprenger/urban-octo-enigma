@@ -11,7 +11,8 @@ main:
     jal	    addLoop             # calcular soma em s3
     jal     divider             # calcular divisão em v1
     la	    $s1, D              # s1 = d[0]
-    sw	    $v1, 0($s1)         # *v1 = conteudo em $s1 + 0
+    sw	    $v1, 0($s1
+    )         # *v1 = conteudo em $s1 + 0
 
     la      $s1, B              # s1 = *vetor[0]
     xor     $s2, $s2, $s2       # i = 0
@@ -93,9 +94,9 @@ di2:
     jr      $ra                 # encerra a funcao
 
 .data
-A: .word 810 100 560 380 600 87
-B: .word 800 555 817 124 890 456
-C: .word 345 200 700 180 600 490
-n: .word 6
+A: .word 710 200 550 390 700 870 200
+B: .word 600 444 800 123 910 456 300
+C: .word 347 300 710 190 610 463 100
+n: .word 7
 k: .word 0
 D: .word 0
